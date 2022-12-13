@@ -43,6 +43,36 @@ public class PersonApiController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);       
     }
 
+    @GetMapping("/profile/{id}")
+    public String getProfile(@PathVariable long id) {
+        Optional<Person> optional = repository.findById(id);
+        if (optional.isPresent()) {  // Good ID
+            Person person = optional.get();  // value from findByID
+            return person.getProfiletoString();  // OK HTTP response: status code, headers, and body
+        }
+        // Bad ID
+        return "Bad-Request,Try Again";       
+    }
+    /* 
+    @GetMapping("/dailytracker/{id}")
+    public String getremainingsteps(@PathVariable long id, @PathVariable String thisday) {
+
+        Optional<Person> optional = repository.findById(id);
+        if (optional.isPresent()) {  // Good ID
+            Person person = optional.get();  // value from findByID
+            Map<String,Map<String,Object>> st = person.getStats();
+            Map<String,Object> steps = st.get(thisday);
+            if(Integer.parseInt(steps.get("steps"))<person.getIdealsteps()) {
+                return "You have steps remaining";
+            }
+            else {
+                return "You have achieved your idealsteps";
+            }
+        }
+        // Bad ID
+        return "Bad-Request,Try Again";       
+    }*/
+
     /*
     DELETE individual Person using ID
      */
@@ -65,7 +95,11 @@ public class PersonApiController {
     public ResponseEntity<Object> postPerson(@RequestParam("email") String email,
                                              @RequestParam("password") String password,
                                              @RequestParam("name") String name,
-                                             @RequestParam("dob") String dobString) {
+                                             @RequestParam("dob") String dobString,
+                                             @RequestParam("height") int height,
+                                             @RequestParam("weight") int weight,
+                                             @RequestParam("freetime") int freetime
+                                             ) {
         Date dob;
         try {
             dob = new SimpleDateFormat("MM-dd-yyyy").parse(dobString);
@@ -73,7 +107,7 @@ public class PersonApiController {
             return new ResponseEntity<>(dobString +" error; try MM-dd-yyyy", HttpStatus.BAD_REQUEST);
         }
         // A person object WITHOUT ID will create a new record with default roles as student
-        Person person = new Person(email, password, name, dob);
+        Person person = new Person(email, password, name, dob, height, weight, freetime);
         repository.save(person);
         return new ResponseEntity<>(email +" is created successfully", HttpStatus.CREATED);
     }
@@ -115,7 +149,7 @@ public class PersonApiController {
             // Set Date and Attributes to SQL HashMap
             Map<String, Map<String, Object>> date_map = new HashMap<>();
             date_map.put( (String) stat_map.get("date"), attributeMap );
-            person.setStats(date_map);  // BUG, needs to be customized to replace if existing or append if new
+            person.setStats(date_map);  //Customized to replace if existing or append if new
             repository.save(person);  // conclude by writing the stats updates
 
             // return Person with update Stats
@@ -125,5 +159,7 @@ public class PersonApiController {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST); 
         
     }
+
+
 
 }

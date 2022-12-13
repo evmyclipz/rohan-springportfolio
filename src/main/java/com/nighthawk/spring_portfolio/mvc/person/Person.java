@@ -1,5 +1,6 @@
 package com.nighthawk.spring_portfolio.mvc.person;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -63,8 +64,16 @@ public class Person {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dob;
-    
 
+    @NonNull
+    private int height; 
+    
+    @NonNull
+    private int weight;
+    
+    @NonNull
+    private int freetime;
+    
     /* HashMap is used to store JSON for daily "stats"
     "stats": {
         "2022-11-13": {
@@ -79,13 +88,38 @@ public class Person {
     
 
     // Constructor used when building object from an API
-    public Person(String email, String password, String name, Date dob) {
+    public Person(String email, String password, String name, Date dob, int height, int weight, int freetime ) {
         this.email = email;
         this.password = password;
         this.name = name;
         this.dob = dob;
+        this.height = height;
+        this.weight = weight;
+        this.freetime = freetime;
     }
 
+    public String toString()
+    {
+        return ("{ \"ID\":"  +this.id+
+               ", \"name\":"  +this.name+ 
+               ", \"email\":" +this.email+ 
+               ", \"dob\":" +this.dob+
+               ", \"age\":" +this.getAge()+
+               ", \"height in cm\":" +this.height+
+               ", \"weight\":" +this.weight+
+               ", \"Freetime to workout\":" +this.freetime+
+               " }");
+    }
+
+    public String getProfiletoString()
+    {
+        return ("{ \"ID\":"  +this.id+
+               ", \"name\":"  +this.name+ 
+               ", \"height\":" +this.height+
+               ", \"weight\":" +this.weight+
+               ", \"Freetime to workout\":" +this.freetime+
+               " }");
+    }
     // A custom getter to return age from dob attribute
     public int getAge() {
         if (this.dob != null) {
@@ -93,5 +127,35 @@ public class Person {
             return Period.between(birthDay, LocalDate.now()).getYears(); }
         return -1;
     }
+
+    public void setStats(Map<String, Map<String, Object>> st)
+    {
+        for(String str:st.keySet())
+        {
+            stats.put(str,st.get(str));
+        }
+    }
+
+    public static void main(String[] args)
+    {
+        try
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            Person rohan = new Person();
+            Person bob = new Person("bob@gmail.com", "Q@W#E$R%TY", "Bob",
+                                     sdf.parse("1600-03-01"), 189, 200, 60) ;
+
+            System.out.println(rohan);
+            System.out.println(bob);
+        } catch (Exception e) 
+        {
+            System.out.println("error; try yyyy-MM-dd");
+        }
+    }
+
+    
+
+
 
 }
