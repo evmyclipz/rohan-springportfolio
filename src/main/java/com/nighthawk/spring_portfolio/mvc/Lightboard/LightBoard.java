@@ -7,15 +7,105 @@ public class LightBoard {
     private Light[][] lights;
 
     /* Initialize LightBoard and Lights */
-    public LightBoard(int numRows, int numCols) {
+    public LightBoard(int numRows, int numCols,int diffcolors) {
         this.lights = new Light[numRows][numCols];
+        int rc=0;
         // 2D array nested loops, used for initialization
         for (int row = 0; row < numRows; row++) {
+            if(diffcolors==1)
+                rc++;
             for (int col = 0; col < numCols; col++) {
-                lights[row][col] = new Light();  // each cell needs to be constructed
+                if(diffcolors==0)
+                    lights[row][col] = new Light();  // each cell needs to be constructed
+                else
+                    lights[row][col] = new Light(rc);
+            }
+        }
+        this.buildBoard();
+    }
+
+    
+    public boolean evaluateLight(int row, int col)
+    {
+        int onCount = 0;
+        if(lights[row][col].isOn())
+        {
+        for(int i = 0; i < lights.length ; i++)
+            {
+                if(lights[i][col].isOn())
+                {
+                    onCount++;
+                }
+            }
+        if(onCount % 2 == 0)
+        {
+            return false;
+        }
+        }
+        else
+        {
+            onCount = 0;
+            for(int i = 0; i < lights.length ; i++)
+            {
+                if(lights[i][col].isOn())
+                {
+                    onCount++;
+                }
+            }
+            if(onCount % 3 == 0)
+            {
+                return true;
+            }
+        }
+
+        return lights[row][col].isOn();
+    }
+
+    public void buildBoard()
+    {
+        /**
+         * Use of nested loops to iterate through lights array to assign on or off for each light
+        */
+        for(int i=0;i<lights.length;i++) 
+        {
+            for(int j=0;j<lights[i].length;j++)
+            {
+                Double x = Math.random();
+                if(x>=0&&x<=0.4)
+                {
+                    lights[i][j].setOn(true);
+                }
+                else
+                {
+                    lights[i][j].setOn(false);
+                }
             }
         }
     }
+
+    public String evaluatetoString() { 
+        String outString = "[";
+        // 2D array nested loops, used for reference
+        for (int row = 0; row < lights.length; row++) {
+            for (int col = 0; col < lights[row].length; col++) {
+                outString += 
+                // data
+                "{" +
+                "\"Evaluate Light\": " + evaluateLight(row, col) + 
+                "\"row\": " + row + "," +
+                "\"column\": " + col + "," +
+                // extract toString data
+                "}," +
+                // newline
+                "\n" ;
+                
+            }
+        }
+        // remove last comma, newline, add square bracket, reset color
+        outString = outString.substring(0,outString.length() - 1) + "]";
+		return outString;
+    }
+
 
     /* Output is intended for API key/values */
     public String toString() { 
@@ -25,11 +115,15 @@ public class LightBoard {
             for (int col = 0; col < lights[row].length; col++) {
                 outString += 
                 // data
-                "{" + 
+                "{" +
+                "\"Light on\": " + lights[row][col].isOn() + 
                 "\"row\": " + row + "," +
                 "\"column\": " + col + "," +
                 "\"light\": " + lights[row][col] +   // extract toString data
-                "}," ;
+                "}," +
+                // newline
+                "\n" ;
+                
             }
         }
         // remove last comma, newline, add square bracket, reset color
@@ -115,6 +209,11 @@ public class LightBoard {
         // remove last comma, newline, add square bracket, reset color
         outString += "\033[m";
 		return outString;
+    }
+
+    public String getLightAtRowColumn(int row,int col)
+    {
+        return lights[row][col].toString();
     }
     
     static public void main(String[] args) {

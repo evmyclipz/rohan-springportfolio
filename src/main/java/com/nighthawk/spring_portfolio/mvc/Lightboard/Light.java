@@ -51,6 +51,42 @@ public class Light {
         this.effect = (short) (Math.random()*(effect+1));
     }
 
+    public Light(int color) {
+        int effect = 4;
+        if(color==1)//white
+        {
+            this.red = 255;
+            this.green = 255;
+            this.blue = 255;
+        }
+        else if(color==2) //lightblue
+        {
+            this.red = 0;
+            this.green = 255;
+            this.blue = 255;
+        }
+        else if(color==3) //dark purple
+        {
+            this.red = 102;
+            this.green = 0;
+            this.blue = 204;
+        }
+        else if(color==4) //orange
+        {
+            this.red = 255;
+            this.green = 128;
+            this.blue = 0;
+        }
+        else{
+            this.red = 0;
+            this.green = 0;
+            this.blue = 0;
+        }
+        this.effect = (short) (Math.random()*(effect+1));
+    }
+
+    
+
     public String getEffectTitle() {
         return EFFECT.get(this.effect);
     }
@@ -72,6 +108,31 @@ public class Light {
             "\"effect\": " + "\"" + EFFECT.get(effect) + "\"" +
             "}" );
     }
+
+
+    public boolean isOn() {
+        return on;
+    }
+
+    public void setOn(boolean on) {
+        this.on = on;
+    }
+
+    public short getRed() {
+        return red;
+    }
+
+    public short getGreen() {
+        return green;
+    }
+
+    public short getBlue() {
+        return blue;
+    }
+
+    public short getEffect() {
+        return effect;
+    }   
 
     static public void main(String[] args) {
         // create and display LightBoard
