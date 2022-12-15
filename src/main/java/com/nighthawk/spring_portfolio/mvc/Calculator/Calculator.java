@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
+import com.nighthawk.spring_portfolio.mvc.calendar.CalendarApiController;
+
 /* In mathematics,
     an expression or mathematical expression is a finite combination of symbols that is well-formed
     according to rules that depend on the context.
@@ -29,6 +31,7 @@ public class Calculator {
         OPERATORS.put("%", 3);
         OPERATORS.put("+", 4);
         OPERATORS.put("-", 4);
+        OPERATORS.put("^", 2);
     }
 
     // Helper definition for supported operators
@@ -51,8 +54,12 @@ public class Calculator {
         // place terms into reverse polish notation
         this.tokensToReversePolishNotation();
 
+        if(this.isBalanced())
+        {
         // calculate reverse polish notation
         this.rpnToResult();
+        }
+        
     }
 
     // Test if token is an operator
@@ -132,6 +139,7 @@ public class Calculator {
                 case "*":
                 case "/":
                 case "%":
+                case "^":
                     // While stack
                     // not empty AND stack top element
                     // and is an operator
@@ -157,6 +165,60 @@ public class Calculator {
 
     }
 
+    public boolean isBalanced()
+    {
+        ArrayList<String> delimiters = this.tokens;
+        
+        String openDel = "(";
+        String closeDel = ")";
+        
+        if(delimiters.size() == 0) {return false;}
+
+        if(delimiters.get(0) == closeDel) {return false;}
+
+        if(delimiters.get(delimiters.size()-1) == openDel) {return false;}
+
+        /* 
+        for(int i = 1; i < delimiters.size();i++) 
+        {
+            if( (delimiters.get(i) == closeDel) && (delimiters.get(i-1) == openDel)) {
+                delimiters.remove(i);
+                delimiters.remove(i-1);
+                i = 0;
+                if (delimiters.size() == 0) {
+                    return true;
+                }
+            }
+            // else if(delimiters.get(i) == closeDel){
+            //     return false;
+            // }
+            i++;
+        }
+        */
+
+        int count=0;
+        for(String ope:delimiters)
+        {
+            if(ope.equals(openDel))
+            {
+                count++;
+            }
+            else if(ope.equals(closeDel))
+            {
+                count--;
+            }
+        }
+        
+        if(count==0)
+            return true;
+        else
+            return false;
+
+                
+                
+    }
+
+
     // Takes RPN and produces a final result
     private void rpnToResult()
     {
@@ -170,12 +232,16 @@ public class Calculator {
             if (isOperator(token))
             {
                 // Pop the two top entries
+                double x = calcStack.pop();
+                double y = calcStack.pop();
+                //System.out.println(x+" "+y+" "+token);
 
                 // Calculate intermediate results
-                result = 0.0;
+                result = calcResult(x, y, token);
 
                 // Push intermediate result back onto the stack
                 calcStack.push( result );
+                //System.out.println(result);
             }
             // else the token is a number push it onto the stack
             else
@@ -185,11 +251,46 @@ public class Calculator {
         }
         // Pop final result and set as final result for expression
         this.result = calcStack.pop();
+        //System.out.println(this.result);
+    }
+
+
+
+    private double calcResult(double x, double y, String op)
+    {
+        //System.out.println(op);
+        if(op.equals("+"))
+        {
+            return x + y;
+        }
+        else if(op.equals("-"))
+        {
+            return y - x;
+        }
+        else if(op.equals("*"))
+        {
+            return x * y;
+        }
+        else if(op.equals("/"))
+        {
+            return y/x;
+        }
+        else if(op.equals("%"))
+        {
+            return y % x;
+        }
+        else if(op.equals("^"))
+        {
+            return Math.pow(y,x);
+        }
+        return 0;
+
     }
 
     // Print the expression, terms, and result
     public String toString() {
         return ("Original expression: " + this.expression + "\n" +
+                "Expression is Balanced: " + this.isBalanced() + "\n" +
                 "Tokenized expression: " + this.tokens.toString() + "\n" +
                 "Reverse Polish Notation: " +this.reverse_polish.toString() + "\n" +
                 "Final result: " + String.format("%.2f", this.result));
@@ -203,12 +304,12 @@ public class Calculator {
 
         System.out.println();
 
-        Calculator parenthesisMath = new Calculator("(100 + 200)  * 3");
+        Calculator parenthesisMath = new Calculator("((100 + 200)  * 3");
         System.out.println("Parenthesis Math\n" + parenthesisMath);
 
         System.out.println();
 
-        Calculator decimalMath = new Calculator("100.2 - 99.3");
+        Calculator decimalMath = new Calculator("(100.2 - 99.3)");
         System.out.println("Decimal Math\n" + decimalMath);
 
         System.out.println();
@@ -220,6 +321,11 @@ public class Calculator {
 
         Calculator divisionMath = new Calculator("300/200");
         System.out.println("Division Math\n" + divisionMath);
+
+        Calculator powerMath = new Calculator("2^3");
+        System.out.println("Power Math\n" + powerMath);
+
+
 
     }
 }
