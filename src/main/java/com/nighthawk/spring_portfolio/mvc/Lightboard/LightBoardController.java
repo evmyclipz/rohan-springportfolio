@@ -38,9 +38,9 @@ public class LightBoardController {
     }
 
     @PostMapping( "/makeBoard")
-    public ResponseEntity<Object> postLightBoard(@RequestParam("rows") int rows, @RequestParam("columms") int columms) 
+    public ResponseEntity<Object> postLightBoard(@RequestParam("rows") int rows, @RequestParam("columms") int columms,@RequestParam("diffcolor")int diffcolor) 
     {
-        lightBoard  = new LightBoard(rows, columms);
+        lightBoard  = new LightBoard(rows, columms, diffcolor);
         
         return new ResponseEntity<>("LightBoard is created successfully", HttpStatus.CREATED);
     }
