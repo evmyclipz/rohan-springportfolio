@@ -1,5 +1,4 @@
 package com.nighthawk.spring_portfolio.mvc.calendar;
-
 // Prototype Implementation
 
 public class APCalendar {
